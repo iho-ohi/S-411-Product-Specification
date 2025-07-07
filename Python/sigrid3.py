@@ -1,374 +1,324 @@
-#from __future__ import print_function        # dies wechselt print ohne klammern zu print()
-#from __future__ import unicode_literals      # dies macht Textstrings in python2 zu unicode
-
-import os
+'''
+Version 2 including S411 Rownames
+ including Polygon, LineString and Point geometries  (Multi... should also be covered)
+ all features/Types of Lines and ponits are included, but still no atttributes
+ polygons are always iceareas (no lakeice and no iceberg area). As attributes wjust the ice egg ic covered.
+'''
 import s411objects
+from S411func import Sig3_Conc, Conc_Sig3
 
-import geopandas as gp
-import pandas as pd
-import fiona
-def multi2single(gpdf):  # probably not needed anymore, as we can use gp.explode
-    gpdf_singlepoly = gpdf[gpdf.geometry.type == 'Polygon']
-    gpdf_multipoly = gpdf[gpdf.geometry.type == 'MultiPolygon']
-
-    for i, row in gpdf_multipoly.iterrows():
-        Series_geometries = pd.Series(row.geometry)
-        df = pd.concat([gp.GeoDataFrame(row, crs=gpdf_multipoly.crs).T]*len(Series_geometries), ignore_index=True)
-        df['geometry']  = Series_geometries
-        gpdf_singlepoly = pd.concat([gpdf_singlepoly, df])
-
-    gpdf_singlepoly.reset_index(inplace=True, drop=True)
-    return gpdf_singlepoly
+def sigrid3ToS411ObjectsN(gpdf):     # compatibility reason
+    return sigrid3ToS411Objects(gpdf)
 
 
-def sigrid3ToS411Objects(shpFile):
-    
+def sigrid3ToS411Objects(gpdf):
+
     s411SeaIceFeatureList = []
-    
-    shpFile = os.path.normpath(shpFile)    
+
     #####################################################
     # Multipart to Singlepart, because s411 does not support multigeometries
-    gpdf = gp.read_file(shpFile)
-    #singlegpdf=multi2single(gpdf)
-    singlegpdf=gpdf.explode(index_parts=True)   # try to convert to single usinf explode, which seeems to work fine
-    singleShpFile='temp_single.shp'
-    singlegpdf.to_file(singleShpFile)
-    
+    # try to convert to single usinf explode, which seeems to work fine
+    singlegpdf = gpdf.explode(index_parts=True)
+    if 'AREA' in singlegpdf:
+        singlegpdf.drop('AREA', axis=1, inplace=True)
+    if 'PERIMETER' in singlegpdf:
+        singlegpdf.drop('PERIMETER', axis=1, inplace=True)
 
-    iceapc = None   
+    # see if polygons,lines or points
+    # wie have to use a loop a geometry can also be none/missing
+    shapetype = ''
+    for geom in singlegpdf.geom_type:
+        if geom == 'Polygon':
+            shapetype = geom
+            break
+        if geom == 'LineString':
+            shapetype = geom
+            break
+        if geom == 'Point':
+            shapetype = geom
+            break
+    else:
+        print('unknown geometry', geom)
+        return
+    # Polygons as seaice
+    if shapetype == 'Polygon':
+        not_implemented = ['DP', 'DD', 'DR', 'DO', 'WF', 'WN', 'WD', 'WW', 'WO',
+                           'RN', 'RA', 'RD', 'RC', 'RF', 'RH', 'RX', 'RO',
+                           'EM', 'EX', 'EI', 'EO', 'AV', 'AK', 'AM', 'AT',
+                           'SN', 'SM', 'SW', 'BD', 'be', 'BN', 'BY',
+                           'BO', 'TT', 'TO', 'OP', 'OS', 'OT', 'T1', 'T2']
+        FABC_iceflz = {22: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 11, 99: 99, 21: 21,
+                       11: 20, 12: 20, 13: 20, 14: 20, 15: 20, 16: 20, 17: 20, 18: 20, 19: 20, 91: 20, 20: 20}
+        # FA,FB,FC level ice=21, stripes and patches 11-20+91; but together with concentration
+        # all stripes and pathes are now transfered to ICEFLZ=20 (NEW definition needed in iceobjects)
         
-    # Iterate trough icearea featues and put into S-411 Objects
-    with fiona.open(singleShpFile) as IAreas:
-        if IAreas.schema['geometry'] != 'Polygon': 
-            print('error')   # oder type anstatt gemetry??
-            return s411SeaIceFeatureList
-        #CoordinateReference=IAreas.crs
-        #IAbounds=IAreas.bounds
-        #IAproperties=IAreas.schema['properties']
-        known_sigrid3=['AREA','PERIMETER','POLY_TYPE',
-                       'CT','CA','CB','CC','SA','SB','SC','FA','FB','FC',
-                       'CN','CD']
-        for jj in IAreas.schema['properties']: 
-            if jj.upper() not in known_sigrid3:
-                print('unknown Sigrid3-property:',jj)
-    
-        for IArow in IAreas:
-            row=IArow['properties']
-            # we just process polygons with sea ice or ice of land origin 
-            try:
-              if not ( row['POLY_TYPE']=='I' or row['POLY_TYPE']=='S'  ): continue
-            except:
-              pass
+        CFinformation=False  # set to true if CF is set with values other then missing
+
+        for g, row in singlegpdf.iterrows():
+            if 'POLY_TYPE' in row:
+                if not (row['POLY_TYPE'] == 'I' or row['POLY_TYPE'] == 'S'):
+                    continue
 
             # Create seaice object
             # not all things are handeld up till now
             # missing CF and all optional objects
             s411SeaIceFeature = s411objects.Seaice()
 
-            #geometry = row.getValue(geomFieldName).WKT #üüüüüüüüüüüüüüüü
-            geometry=IArow['geometry']   #['coordinates']
-            #feature id for gml
-            fid = IArow['id']
-            if fid is not None:
-                s411SeaIceFeature.set_gml_id(fid)
-        
-            # ICEACT from CT
+            geometry = None
             ct = None
-            if 'CT' in row:
-                try:
-                    ct = int(row['CT'])
-                except:
-                    ct = 99
-                if ct<0:
-                    ct=99
-                elif ct<=3:
-                    ct=ct+1
-             
-            # ICEAPC from CA,CB,CC
-            iceapc = None 
-            if 'CA' in row:
-                try:
-                   iceapc = [ int(row['CA']) ]
-                except:
-                   iceapc = [ 99]
-                if 'CB' in row:
-                    try:
-                        iceapc.append( int(row['CB']) )
-                    except:
-                        iceapc.append( 99 )
-                    if 'CC' in row:
-                        try:
-                            iceapc.append( int(row['CC']) )
-                        except:
-                            iceapc.append( 99 )
-                for ii in range(len(iceapc)):
-                    if iceapc[ii]<0:
-                        iceapc[ii]=99
-                    elif iceapc[ii]<=3:
-                        iceapc[ii]=iceapc[ii]+1
+            iceapc = [99, 99, 99, 99, 99]
+            icesod = iceapc.copy()
+            iceflz = iceapc.copy()
+            for rowname in row.keys():
+                # rowname in uppercase to compare
+                rowNAME = rowname.upper()
 
-            # ICESOD
-            icesod = None
-            if 'SA' in row:
-                try:
-                    icesod = [ int(row['SA']) ]
-                except:
-                    icesod = [ 99 ]
-                if 'SB' in row:
+                if rowNAME == 'POLY_TYPE':
+                    continue
+                if rowNAME == 'GEOMETRY':
+                    geometry = row[rowname]  # ['coordinates']
+                    s411SeaIceFeature.set_geometry(geometry)
+                elif hasattr(s411SeaIceFeature, rowname):
+                    # Sigrid3 can also use S411objectts
+                    # checking for ice objects (we do not check for inconsistencies like
+                    # having CT and ICEACT)
+                    bb=getattr(s411SeaIceFeature,'set_'+rowname)
+                    bb(row[rowname])
+                    continue
+                elif hasattr(s411SeaIceFeature, rowname.lower()):
+                        bb=getattr(s411SeaIceFeature,'set_'+rowname.lower())
+                        bb(row[rowname])
+                        continue
+                else:
+                    # Integer out of row (is used often)
                     try:
-                        icesod.append( int(row['SB']) )
-                    except:
-                        icesod.append( 99 )
-                    if 'SC' in row:
-                        try: 
-                            icesod.append( int(row['SC']) )
-                        except:
-                            icesod.append( 99 )
-                for ii in range(len(icesod)):
-                    if icesod[ii]<0:
-                        icesod[ii]=99
-                    elif icesod[ii]<1:
-                        icesod[ii]=icesod[ii]+1
-            # ICEFLZ
-            iceflz = None
-            if 'FA' in row:
-                try:
-                    iceflz = [ int(row['FA']) ]
-                except:
-                    iceflz = [ 99 ]
-                if 'FB' in row:
-                    try:
-                        iceflz.append( int(row['FB']) )
-                    except:
-                        iceflz.append( 99 )
-                    if 'FC' in row:
+                        rowint = int(row[rowname])
+                        if rowint<0: rowint=99 #  ????????? thats just to catch values of -9 for missing
+                    except Exception:
+                        rowint = 99
+                    # feature id for gml
+                    if rowNAME == 'ID':
+                        fid = row[rowname]
+                        if fid is not None:
+                            s411SeaIceFeature.set_gml_id(fid)
+    
+                    # ICEACT from CT
+                    elif rowNAME == 'CT':
+                        ct = rowint
+                        if ct < 0:
+                            ct = 99
+    
+                    # ICEAPC from CA,CB,CC
+                    elif rowNAME == 'CA':
+                        iceapc[0] = rowint
+                    elif rowNAME == 'CB':
+                        iceapc[1] = rowint
+                    elif rowNAME == 'CC':
+                        iceapc[2] = rowint
+                    # ICESOD from SA,SB,SC,CC,CD
+                    elif rowNAME == 'SA':
+                        icesod[0] = rowint
+                    elif rowNAME == 'SB':
+                        icesod[1] = rowint
+                    elif rowNAME == 'SC':
+                        icesod[2] = rowint
+                    elif rowNAME == 'CN':
+                        icesod[3] = rowint
+                        if rowint != 99:
+                            iceapc[3] = 4  # traces
+                    elif rowNAME == 'CD':  # iseapc must set later
+                        icesod[4] = rowint
+                    # ICEFLZ from FA,FB,FC
+                    elif rowNAME == 'FA':
+                        if rowint in FABC_iceflz:
+                            iceflz[0] = FABC_iceflz[rowint]
+                    elif rowNAME == 'FB':
+                        if rowint in FABC_iceflz:
+                            iceflz[1] = FABC_iceflz[rowint]
+                    elif rowNAME == 'FC':
+                        if rowint in FABC_iceflz:
+                            iceflz[2] = FABC_iceflz[rowint]
+                    elif rowNAME == 'FP':  # for a first shot we set predominat equal to FA  !!!!! THIS HAS ROOM FOR IMPROVEMENT (primary and secondary)
+                        if rowint in FABC_iceflz:
+                            iceflz[0] = FABC_iceflz[rowint]
+                    elif rowNAME == 'FS': # for a first shot we set secondary equal to FB
+                        if rowint in FABC_iceflz:
+                            iceflz[1] = FABC_iceflz[rowint]
+                    # others
+                    elif rowNAME == 'CF':  # complicated if set and most probable transfer is not correct, as it also depends on ice service
+                        if rowint==99:
+                            continue
+                        elif rowint>99:
+                            ii1=int(rowint/100)
+                            ii2=rowint%100
+                        elif rowint>0:
+                            ii1=rowint
+                            ii2=99
+                        else:
+                            continue   # CF set but <=0
+                        if not CFinformation:
+                            print('CF is used, first value=',rowint)
+                            CFinformation=True
+                        if (ii1 > 0) and (ii1<99):  # sometime seems as -9 given as unknown, then dont set
+                            iceflz[3] = FABC_iceflz[rowint]
+                        if (ii2 > 0) and (ii2<99):  # sometime seems as -9 given as unknown, then dont set
+                            iceflz[4] = FABC_iceflz[rowint]
+                    elif rowNAME == 'SD':  # sastrugi orientation
                         try:
-                            iceflz.append( int(row['FC']) )
-                        except:
-                            iceflz.append( 99 )
-                for ii in range(len(iceflz)):
-                    if iceflz[ii]<0:
-                        iceflz[ii]=99
-                    elif iceflz[ii]<11:
-                        iceflz[ii]=iceflz[ii]+1
+                            icescn = rowint
+                            if icescn > 0:  # sometime seems as -9 given as unknown, then dont set
+                                s411SeaIceFeature.set_icedos(icescn)
+                        except Exception:
+                            pass
+                    elif rowNAME == 'SO':  # observational method not transfered to S411'
+                        try:
+                            iceNNN = rowint
+                            if iceNNN > 0:  # sometime seems as -9 given as unknown, then dont set
+                                pass
+                        except Exception:
+                            pass
+                    # now all still not implemented SIGRID-3 fields
+                    elif rowname in not_implemented:
+                        print('not implemented feature',
+                              rowname, ' = ', row[rowname])
                     else:
-                        iceflz[ii]=99
+                        print('totally unknown Field:', rowname)
+    
+                # convert Ice Egg to ice objects
+            # sum of all partial concentrations
+            ct2 = sum(map(Sig3_Conc, iceapc))
 
-                
-            CNCD = None
-            if 'CN' in row:
-                try:
-                    CNCD = [ int(row['CN']) ]
-                except:
-                    CNCD = [ 99 ]
-                for ii in range(len(CNCD)):
-                    if CNCD[ii]<0:
-                        CNCD[ii]=99
-                    elif CNCD[ii]<=3:
-                        CNCD[ii]=CNCD[ii]+1
-                    if CNCD[ii] != 99:
-                        iceapc.insert(0,2)
-                        icesod.insert(0,CNCD[ii])
-                        iceflz.insert(0,99)
-                        
-            if 'CD' in row:
-                try:
-                    CNCD = [ int(row['CD']) ]
-                except:
-                    CNCD = [ 99 ]
-                for ii in range(len(CNCD)):
-                    if CNCD[ii]<0:
-                        CNCD[ii]=99
-                    elif CNCD[ii]<=3:
-                        CNCD[ii]=CNCD[ii]+1
-                    if CNCD[ii] != 99:
-                        iceapc.append(2)
-                        icesod.append(CNCD[ii])
-                        iceflz.append(99)
-                        
-            if ct is not None:
+            if (ct is None) and (ct2 > 0):
+                ct = Conc_Sig3(ct2)
+
+            if ct is not None:   # else we do not have to set ice egg
                 s411SeaIceFeature.set_iceact(ct)
-            if iceapc is not None:
-                s411SeaIceFeature.set_iceapc(iceapc)
-            if icesod is not None:
-                s411SeaIceFeature.set_icesod(icesod)
-            if iceflz is not None:
-                s411SeaIceFeature.set_iceflz(iceflz)
 
-            #  ia_sfa fro ca,cb,cc
-                 
-            # geometry as WKT to seaice feature
-            
+                # check iceapc,icesod,iceflz
+                if (iceapc[0] == 99) and (min(icesod)<99):   
+                    if (iceapc[0] == 99):
+                        iceapc[0]=ct
+                    else:
+                        iceapc[0]=Conc_Sig3(Sig3_Conc(ct)-ct2)
+                if icesod[4] != 99:  #
+                    iceapc[4] = Conc_Sig3(Sig3_Conc(ct)-ct2)
+                    if iceapc[4] == '98':
+                        iceapc[4] = '04'  # traces
+
+                for ii in range(len(iceapc)-1, -1, -1):
+                    if iceapc[ii] == 99:
+                        del iceapc[ii]
+                        if icesod[ii] != 99:
+                            print('icesod set with iceapc unknown')
+                        del icesod[ii]
+                        if iceflz[ii] != 99:
+                            print('iceflz set with iceapc unknown')
+                        del iceflz[ii]
+
+                if iceapc is not None:
+                    s411SeaIceFeature.set_iceapc(iceapc)
+                    s411SeaIceFeature.set_icesod(icesod)
+                    s411SeaIceFeature.set_iceflz(iceflz)
+
             if geometry is not None:
                 s411SeaIceFeature.set_geometry(geometry)
-                    
+                s411SeaIceFeatureList.append(s411SeaIceFeature)
+
+        return s411SeaIceFeatureList
+    if shapetype == 'LineString':   # just a draft, not setting attributes
+        for g, row in singlegpdf.iterrows():
+            if 'LINE_TYPE' not in row:
+                continue
+            geometry=None
+            geometry = row['GEOMETRY']  # ['coordinates']
+            if row['LINE_TYPE'] == 'ICELNE':
+                s411SeaIceFeature = s411objects.Icelne()
+                pass
+            elif row['LINE_TYPE'] == 'BRGLNE':
+                s411SeaIceFeature = s411objects.Brglne()
+                pass
+            elif row['LINE_TYPE'] == 'OPNLNE':
+                s411SeaIceFeature = s411objects.Opelne()
+                pass
+            elif row['LINE_TYPE'] == 'LKILNE':
+                s411SeaIceFeature = s411objects.Lkilne()
+                pass
+            elif row['LINE_TYPE'] == 'I_RIDG':
+                s411SeaIceFeature = s411objects.I_Ridg()
+                pass
+            elif row['LINE_TYPE'] == 'I_LEAD':
+                s411SeaIceFeature = s411objects.I_Lead()
+                pass
+            elif row['LINE_TYPE'] == 'I_FRAL':
+                s411SeaIceFeature = s411objects.I_Fral()
+                pass
+            elif row['LINE_TYPE'] == 'I_CRAC':
+                s411SeaIceFeature = s411objects.I_Crac()
+                pass
+            if geometry is not None:
+                s411SeaIceFeature.set_geometry(geometry)
             s411SeaIceFeatureList.append(s411SeaIceFeature)
-        
-    return s411SeaIceFeatureList
-                    
-                    
 
-def sigrid3ToS411ObjectsN(gpdf):
-    
-    s411SeaIceFeatureList = []
-    
-   #####################################################
-    # Multipart to Singlepart, because s411 does not support multigeometries
-    #singlegpdf=multi2single(gpdf)
-    singlegpdf=gpdf.explode(index_parts=True)   # try to convert to single usinf explode, which seeems to work fine
+        return s411SeaIceFeatureList
+    if shapetype == 'Point':   # just a draft, not setting attributes
+        for g, row in singlegpdf.iterrows():
+            if 'POINT_TYPE' not in row:
+                continue
+            geometry=None
+            geometry = row['GEOMETRY']  # ['coordinates']
+            if row['POINT_TYPE'] == 'ICECOM':
+                s411SeaIceFeature = s411objects.Icecom()
+                pass
+            elif row['POINT_TYPE'] == 'ICELEA':
+                s411SeaIceFeature = s411objects.Icelea()
+                pass
+            elif row['POINT_TYPE'] == 'ICEBRG':
+                s411SeaIceFeature = s411objects.Icebrg()
+                pass
+            elif row['POINT_TYPE'] == 'FLOBRG':
+                s411SeaIceFeature = s411objects.Flobrg()
+                pass
+            elif row['POINT_TYPE'] == 'ICETHK':
+                s411SeaIceFeature = s411objects.Icethk()
+                pass
+            elif row['POINT_TYPE'] == 'ICESHR':
+                s411SeaIceFeature = s411objects.Iceshr()
+                pass
+            elif row['POINT_TYPE'] == 'ICEDIV':
+                s411SeaIceFeature = s411objects.Icediv()
+                pass
+            elif row['POINT_TYPE'] == 'ICERDG':
+                s411SeaIceFeature = s411objects.Icerdg()
+                pass
+            elif row['POINT_TYPE'] == 'ICEKEL':
+                s411SeaIceFeature = s411objects.Icekel()
+                pass
+            elif row['POINT_TYPE'] == 'ICEDFT':
+                s411SeaIceFeature = s411objects.Icedft()
+                pass
+            elif row['POINT_TYPE'] == 'ICEFRA':
+                s411SeaIceFeature = s411objects.Icefra()
+                pass
+            elif row['POINT_TYPE'] == 'ICERFT':
+                s411SeaIceFeature = s411objects.Icerft()
+                pass
+            elif row['POINT_TYPE'] == 'JMDBRR':
+                s411SeaIceFeature = s411objects.Jmdbrr()
+                pass
+            elif row['POINT_TYPE'] == 'STGMLT':
+                s411SeaIceFeature = s411objects.Stgmlt()
+                pass
+            elif row['POINT_TYPE'] == 'SNWCVR':
+                s411SeaIceFeature = s411objects.Snwcvr()
+                pass
+            elif row['POINT_TYPE'] == 'STRPTC':
+                s411SeaIceFeature = s411objects.Strptc()
+                pass
+            elif row['POINT_TYPE'] == 'I_GRHM':
+                s411SeaIceFeature = s411objects.I_Grhm()
+                pass
+            if geometry is not None:
+                s411SeaIceFeature.set_geometry(geometry)
+            s411SeaIceFeatureList.append(s411SeaIceFeature)
 
-    iceapc = None   
-        
-    for g,row in singlegpdf.iterrows():
-        if row['geometry'].geom_type != 'Polygon': continue
-        if 'POLY_TYPE' in row:
-          if not ( row['POLY_TYPE']=='I' or row['POLY_TYPE']=='S'  ): continue
-    
-        # Create seaice object
-        # not all things are handeld up till now
-        # missing CF and all optional objects
-        s411SeaIceFeature = s411objects.Seaice()
-    
-        #geometry 
-        geometry=row['geometry']   #['coordinates']
-        #feature id for gml
-        if 'id' in row:
-            fid = row['id']
-            if fid is not None:
-                s411SeaIceFeature.set_gml_id(fid)
-    
-        # ICEACT from CT
-        ct = None
-        if 'CT' in row:
-            try:
-                ct = int(row['CT'])
-            except:
-                ct = 99
-            if ct<0:
-                ct=99
-            elif ct<=3:
-                ct=ct+1
-         
-        # ICEAPC from CA,CB,CC
-        iceapc = None 
-        if 'CA' in row:
-            try:
-               iceapc = [ int(row['CA']) ]
-            except:
-               iceapc = [ 99]
-            if 'CB' in row:
-                try:
-                    iceapc.append( int(row['CB']) )
-                except:
-                    iceapc.append( 99 )
-                if 'CC' in row:
-                    try:
-                        iceapc.append( int(row['CC']) )
-                    except:
-                        iceapc.append( 99 )
-            for ii in range(len(iceapc)):
-                if iceapc[ii]<0:
-                    iceapc[ii]=99
-                elif iceapc[ii]<=3:
-                    iceapc[ii]=iceapc[ii]+1
-    
-        # ICESOD
-        icesod = None
-        if 'SA' in row:
-            try:
-                icesod = [ int(row['SA']) ]
-            except:
-                icesod = [ 99 ]
-            if 'SB' in row:
-                try:
-                    icesod.append( int(row['SB']) )
-                except:
-                    icesod.append( 99 )
-                if 'SC' in row:
-                    try: 
-                        icesod.append( int(row['SC']) )
-                    except:
-                        icesod.append( 99 )
-            for ii in range(len(icesod)):
-                if icesod[ii]<0:
-                    icesod[ii]=99
-                elif icesod[ii]<1:
-                    icesod[ii]=icesod[ii]+1
-        # ICEFLZ
-        iceflz = None
-        if 'FA' in row:
-            try:
-                iceflz = [ int(row['FA']) ]
-            except:
-                iceflz = [ 99 ]
-            if 'FB' in row:
-                try:
-                    iceflz.append( int(row['FB']) )
-                except:
-                    iceflz.append( 99 )
-                if 'FC' in row:
-                    try:
-                        iceflz.append( int(row['FC']) )
-                    except:
-                        iceflz.append( 99 )
-            for ii in range(len(iceflz)):
-                if iceflz[ii]<0:
-                    iceflz[ii]=99
-                elif iceflz[ii]<11:
-                    iceflz[ii]=iceflz[ii]+1
-                else:
-                    iceflz[ii]=99
-    
-            
-        CNCD = None
-        if 'CN' in row:
-            try:
-                CNCD = [ int(row['CN']) ]
-            except:
-                CNCD = [ 99 ]
-            for ii in range(len(CNCD)):
-                if CNCD[ii]<0:
-                    CNCD[ii]=99
-                elif CNCD[ii]<=3:
-                    CNCD[ii]=CNCD[ii]+1
-                if CNCD[ii] != 99:
-                    iceapc.insert(0,2)
-                    icesod.insert(0,CNCD[ii])
-                    iceflz.insert(0,99)
-                    
-        if 'CD' in row:
-            try:
-                CNCD = [ int(row['CD']) ]
-            except:
-                CNCD = [ 99 ]
-            for ii in range(len(CNCD)):
-                if CNCD[ii]<0:
-                    CNCD[ii]=99
-                elif CNCD[ii]<=3:
-                    CNCD[ii]=CNCD[ii]+1
-                if CNCD[ii] != 99:
-                    iceapc.append(2)
-                    icesod.append(CNCD[ii])
-                    iceflz.append(99)
-                    
-        if ct is not None:
-            s411SeaIceFeature.set_iceact(ct)
-        if iceapc is not None:
-            s411SeaIceFeature.set_iceapc(iceapc)
-        if icesod is not None:
-            s411SeaIceFeature.set_icesod(icesod)
-        if iceflz is not None:
-            s411SeaIceFeature.set_iceflz(iceflz)
-    
-        #  ia_sfa fro ca,cb,cc
-             
-        # geometry as WKT to seaice feature
-        
-        if geometry is not None:
-            s411SeaIceFeature.set_geometry(geometry)
-                
-        s411SeaIceFeatureList.append(s411SeaIceFeature)
-    
-    return s411SeaIceFeatureList
-                    
-                    
+        return s411SeaIceFeatureList
