@@ -11,6 +11,8 @@ from xml.etree import ElementTree as ET
 import geometry
 
 import zipfile
+ice_catalog="{http://www.jcomm.info/ice}"
+
 def zipdir(path, zip):
 	# writes a full directory to a zipfile
 	# filenames within the zipfile begin with the directoryname
@@ -84,18 +86,18 @@ def s411ObjectsToGml(s411ObjectList,S411epsg=4326):
     for s411Object in s411ObjectList:
         typeName = type(s411Object).__name__
         
-        iceFeatureMemberElement = ET.Element("{http://www.jcomm.info/ice}IceFeatureMember")
+        iceFeatureMemberElement = ET.Element(ice_catalog+"IceFeatureMember")
         
         iceElement = None # for storing of ice feature elements
         
         # seaice
         if typeName == "Seaice":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}seaice")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"seaice")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "seaice." + str(str(s411Object.get_gml_id()))
             
             try:
                 if s411Object.get_iceact() is not None and s411Object.get_iceact() != "":# and s411Object.get_iceact() in iceactEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}iceact")
+                    element = ET.SubElement(iceElement, ice_catalog+"iceact")
                     if(str(s411Object.get_iceact()).strip() is not None):
                         element.text = str(s411Object.get_iceact())
             except AttributeError:
@@ -103,217 +105,217 @@ def s411ObjectsToGml(s411ObjectList,S411epsg=4326):
                  
             try:
                 if s411Object.get_iceapc() is not None and s411Object.get_iceapc() != 0:# and s411Object.get_iceapc() in iceapcEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}iceapc")
+                    element = ET.SubElement(iceElement, ice_catalog+"iceapc")
                     element.text = str(s411Object.get_iceapc())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icesod() is not None and s411Object.get_icesod() != "":#and s411Object.get_icesod() in icesodEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icesod")
+                    element = ET.SubElement(iceElement, ice_catalog+"icesod")
                     element.text = str(s411Object.get_icesod())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_iceflz() is not None and s411Object.get_iceflz() != "":#and s411Object.get_iceflz() in iceflzEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}iceflz")
+                    element = ET.SubElement(iceElement, ice_catalog+"iceflz")
                     element.text = str(s411Object.get_iceflz())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icespc() is not None and s411Object.get_icespc() != "":#and s411Object.get_icespc() in icespcEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icespc")
+                    element = ET.SubElement(iceElement, ice_catalog+"icespc")
                     element.text = str(s411Object.get_icespc())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icelvl() is not None and s411Object.get_icelvl() != "":#and s411Object.get_icelvl() in icelvlEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icelvl")
+                    element = ET.SubElement(iceElement, ice_catalog+"icelvl")
                     element.text = str(s411Object.get_icelvl())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icecst() is not None and s411Object.get_icecst() != "":#and s411Object.get_icecst() in icecstEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icecst")
+                    element = ET.SubElement(iceElement, ice_catalog+"icecst")
                     element.text = str(s411Object.get_icecst())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icefty() is not None :#and s411Object.get_icefty() in iceftyEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icefty")
+                    element = ET.SubElement(iceElement, ice_catalog+"icefty")
                     element.text = str(s411Object.get_icefty())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icedsp() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icedsp")
+                    element = ET.SubElement(iceElement, ice_catalog+"icedsp")
                     element.text = str(s411Object.get_icedsp())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_iceddr() is not None :#and s411Object.get_iceddr() in iceddrEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}iceddr")
+                    element = ET.SubElement(iceElement, ice_catalog+"iceddr")
                     element.text = str(s411Object.get_iceddr())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icercn() is not None :#and s411Object.get_icercn() in icercnEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icercn")
+                    element = ET.SubElement(iceElement, ice_catalog+"icercn")
                     element.text = str(s411Object.get_icercn())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icerfq() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icerfq")
+                    element = ET.SubElement(iceElement, ice_catalog+"icerfq")
                     element.text = str(s411Object.get_icerfq())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icermh() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icermh")
+                    element = ET.SubElement(iceElement, ice_catalog+"icermh")
                     element.text = str(s411Object.get_icermh())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icerxh() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icerxh")
+                    element = ET.SubElement(iceElement, ice_catalog+"icerxh")
                     element.text = str(s411Object.get_icerxh())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icerdv() is not None :#and s411Object.get_icerdv() in icerdvEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icerdv")
+                    element = ET.SubElement(iceElement, ice_catalog+"icerdv")
                     element.text = str(s411Object.get_icerdv())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icekcn() is not None :#and s411Object.get_icekcn() in icekcnEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icekcn")
+                    element = ET.SubElement(iceElement, ice_catalog+"icekcn")
                     element.text = str(s411Object.get_icekcn())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icekfq() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icekfq")
+                    element = ET.SubElement(iceElement, ice_catalog+"icekfq")
                     element.text = str(s411Object.get_icekfq())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icekmd() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icekmd")
+                    element = ET.SubElement(iceElement, ice_catalog+"icekmd")
                     element.text = str(s411Object.get_icekmd())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icekxd() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icekxd")
+                    element = ET.SubElement(iceElement, ice_catalog+"icekxd")
                     element.text = str(s411Object.get_icekxd())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icefcn() is not None :#and s411Object.get_icefcn() in icefcnEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icefcn")
+                    element = ET.SubElement(iceElement, ice_catalog+"icefcn")
                     element.text = str(s411Object.get_icefcn())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icetck() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icetck")
+                    element = ET.SubElement(iceElement, ice_catalog+"icetck")
                     element.text = str(s411Object.get_icetck())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icemax() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icemax")
+                    element = ET.SubElement(iceElement, ice_catalog+"icemax")
                     element.text = str(s411Object.get_icemax())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icemin() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icemin")
+                    element = ET.SubElement(iceElement, ice_catalog+"icemin")
                     element.text = str(s411Object.get_icemin())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icetty() is not None :#and s411Object.get_icetty() in icettyEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icetty")
+                    element = ET.SubElement(iceElement, ice_catalog+"icetty")
                     element.text = str(s411Object.get_icetty())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icemlt() is not None :#and s411Object.get_icemlt() in icemltEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icemlt")
+                    element = ET.SubElement(iceElement, ice_catalog+"icemlt")
                     element.text = str(s411Object.get_icemlt())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icescn() is not None :#and s411Object.get_icescn() in icescnEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icescn")
+                    element = ET.SubElement(iceElement, ice_catalog+"icescn")
                     element.text = str(s411Object.get_icescn())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icesct() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icesct")
+                    element = ET.SubElement(iceElement, ice_catalog+"icesct")
                     element.text = str(s411Object.get_icesct())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icedos() is not None :#and s411Object.get_icedos() in icedosEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icedos")
+                    element = ET.SubElement(iceElement, ice_catalog+"icedos")
                     element.text = str(s411Object.get_icedos())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icelst() is not None :#and s411Object.get_icelst() in icelstEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icelst")
+                    element = ET.SubElement(iceElement, ice_catalog+"icelst")
                     element.text = str(s411Object.get_icelst())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icelfq() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icelfq")
+                    element = ET.SubElement(iceElement, ice_catalog+"icelfq")
                     element.text = str(s411Object.get_icelfq())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icelor() is not None :#and s411Object.get_icelor() in icelorEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icelor")
+                    element = ET.SubElement(iceElement, ice_catalog+"icelor")
                     element.text = str(s411Object.get_icelor())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icelwd() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icelwd")
+                    element = ET.SubElement(iceElement, ice_catalog+"icelwd")
                     element.text = str(s411Object.get_icelwd())
             except AttributeError:
                 pass
@@ -327,264 +329,264 @@ def s411ObjectsToGml(s411ObjectList,S411epsg=4326):
             
             try:
                 if s411Object.get_ia_sng() is not None :#and s411Object.get_ia_sng() in ia_sngEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_sng")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_sng")
                     element.text = str(s411Object.get_ia_sng())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_ia_mlt() is not None :#and s411Object.get_ia_mlt() in ia_mltEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_mlt")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_mlt")
                     element.text = str(s411Object.get_ia_mlt())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_ia_plg() is not None :#and s411Object.get_ia_plg() in ia_plgEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_plg")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_plg")
                     element.text = str(s411Object.get_ia_plg())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_ia_hlg() is not None :#and s411Object.get_ia_hlg() in ia_hlgEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_hlg")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_hlg")
                     element.text = str(s411Object.get_ia_hlg())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_ia_dug() is not None :#and s411Object.get_ia_dug() in ia_dugEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_dug")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_dug")
                     element.text = str(s411Object.get_ia_dug())
             except AttributeError:
                 pass
                 
         # lacice
         if typeName == "Lacice":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}lacice")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"lacice")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "lacice." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_iceact() is not None :#and s411Object.get_iceact() in iceactEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}iceact")
+                    element = ET.SubElement(iceElement, ice_catalog+"iceact")
                     element.text = str(s411Object.get_iceact())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_iceapc() is not None :#and s411Object.get_iceapc() in iceapcEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}iceapc")
+                    element = ET.SubElement(iceElement, ice_catalog+"iceapc")
                     element.text = str(s411Object.get_iceapc())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icelso() is not None :#and s411Object.get_icelso() in icesodEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icesod")
+                    element = ET.SubElement(iceElement, ice_catalog+"icesod")
                     element.text = str(s411Object.get_icelso())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_iceflz() is not None :#and s411Object.get_iceflz() in iceflzEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}iceflz")
+                    element = ET.SubElement(iceElement, ice_catalog+"iceflz")
                     element.text = str(s411Object.get_iceflz())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icespc() is not None :#and s411Object.get_icespc() in icespcEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icespc")
+                    element = ET.SubElement(iceElement, ice_catalog+"icespc")
                     element.text = str(s411Object.get_icespc())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icelvl() is not None :#and s411Object.get_icelvl() in icelvlEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icelvl")
+                    element = ET.SubElement(iceElement, ice_catalog+"icelvl")
                     element.text = str(s411Object.get_icelvl())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icecst() is not None :#and s411Object.get_icecst() in icecstEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icecst")
+                    element = ET.SubElement(iceElement, ice_catalog+"icecst")
                     element.text = str(s411Object.get_icecst())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icefty() is not None :#and s411Object.get_icefty() in iceftyEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icefty")
+                    element = ET.SubElement(iceElement, ice_catalog+"icefty")
                     element.text = str(s411Object.get_icefty())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icedsp() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icedsp")
+                    element = ET.SubElement(iceElement, ice_catalog+"icedsp")
                     element.text = str(s411Object.get_icedsp())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_iceddr() is not None :#and s411Object.get_iceddr() in iceddrEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}iceddr")
+                    element = ET.SubElement(iceElement, ice_catalog+"iceddr")
                     element.text = str(s411Object.get_iceddr())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icercn() is not None :#and s411Object.get_icercn() in icercnEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icercn")
+                    element = ET.SubElement(iceElement, ice_catalog+"icercn")
                     element.text = str(s411Object.get_icercn())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icerfq() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icerfq")
+                    element = ET.SubElement(iceElement, ice_catalog+"icerfq")
                     element.text = str(s411Object.get_icerfq())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icermh() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icermh")
+                    element = ET.SubElement(iceElement, ice_catalog+"icermh")
                     element.text = str(s411Object.get_icermh())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icerxh() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icerxh")
+                    element = ET.SubElement(iceElement, ice_catalog+"icerxh")
                     element.text = str(s411Object.get_icerxh())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icerdv() is not None :#and s411Object.get_icerdv() in icerdvEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icerdv")
+                    element = ET.SubElement(iceElement, ice_catalog+"icerdv")
                     element.text = str(s411Object.get_icerdv())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icekcn() is not None :#and s411Object.get_icekcn() in icekcnEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icekcn")
+                    element = ET.SubElement(iceElement, ice_catalog+"icekcn")
                     element.text = str(s411Object.get_icekcn())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icekfq() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icekfq")
+                    element = ET.SubElement(iceElement, ice_catalog+"icekfq")
                     element.text = str(s411Object.get_icekfq())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icekmd() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icekmd")
+                    element = ET.SubElement(iceElement, ice_catalog+"icekmd")
                     element.text = str(s411Object.get_icekmd())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icekxd() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icekxd")
+                    element = ET.SubElement(iceElement, ice_catalog+"icekxd")
                     element.text = str(s411Object.get_icekxd())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icefcn() is not None :#and s411Object.get_icefcn() in icefcnEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icefcn")
+                    element = ET.SubElement(iceElement, ice_catalog+"icefcn")
                     element.text = str(s411Object.get_icefcn())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icetck() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icetck")
+                    element = ET.SubElement(iceElement, ice_catalog+"icetck")
                     element.text = str(s411Object.get_icetck())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icemax() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icemax")
+                    element = ET.SubElement(iceElement, ice_catalog+"icemax")
                     element.text = str(s411Object.get_icemax())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icemin() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icemin")
+                    element = ET.SubElement(iceElement, ice_catalog+"icemin")
                     element.text = str(s411Object.get_icemin())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icetty() is not None :#and s411Object.get_icetty() in icettyEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icetty")
+                    element = ET.SubElement(iceElement, ice_catalog+"icetty")
                     element.text = str(s411Object.get_icetty())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icemlt() is not None :#and s411Object.get_icemlt() in icemltEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icemlt")
+                    element = ET.SubElement(iceElement, ice_catalog+"icemlt")
                     element.text = str(s411Object.get_icemlt())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icescn() is not None :#and s411Object.get_icescn() in icescnEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icescn")
+                    element = ET.SubElement(iceElement, ice_catalog+"icescn")
                     element.text = str(s411Object.get_icescn())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icesct() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icesct")
+                    element = ET.SubElement(iceElement, ice_catalog+"icesct")
                     element.text = str(s411Object.get_icesct())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icedos() is not None :#and s411Object.get_icedos() in icedosEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icedos")
+                    element = ET.SubElement(iceElement, ice_catalog+"icedos")
                     element.text = str(s411Object.get_icedos())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icelst() is not None :#and s411Object.get_icelst() in icelstEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icelst")
+                    element = ET.SubElement(iceElement, ice_catalog+"icelst")
                     element.text = str(s411Object.get_icelst())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icelfq() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icelfq")
+                    element = ET.SubElement(iceElement, ice_catalog+"icelfq")
                     element.text = str(s411Object.get_icelfq())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icelor() is not None :#and s411Object.get_icelor() in icelorEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icelor")
+                    element = ET.SubElement(iceElement, ice_catalog+"icelor")
                     element.text = str(s411Object.get_icelor())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icelwd() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icelwd")
+                    element = ET.SubElement(iceElement, ice_catalog+"icelwd")
                     element.text = str(s411Object.get_icelwd())
             except AttributeError:
                 pass
@@ -592,343 +594,343 @@ def s411ObjectsToGml(s411ObjectList,S411epsg=4326):
         
         # brgare
         if typeName == "Brgare":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}brgare")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"brgare")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "brgare." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_icebnm() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icebnm")
+                    element = ET.SubElement(iceElement, ice_catalog+"icebnm")
                     element.text = str(s411Object.get_icebnm())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icebsz() is not None :#and s411Object.get_icebsz() in icebszEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icebsz")
+                    element = ET.SubElement(iceElement, ice_catalog+"icebsz")
                     element.text = str(s411Object.get_icebsz())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_ia_bcn() is not None :#and s411Object.get_ia_bcn() in ia_bcnEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_bcn")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_bcn")
                     element.text = str(s411Object.get_ia_bcn())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_ia_bfm() is not None :#and s411Object.get_ia_bfm() in ia_bfmEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_bfm")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_bfm")
                     element.text = str(s411Object.get_ia_bfm())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_ia_buh() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_buh")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_buh")
                     element.text = str(s411Object.get_ia_buh())
             except AttributeError:
                 pass
             
         # icelne
         if typeName == "Icelne":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}icelne")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"icelne")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "icelne." + str(s411Object.get_gml_id())
             
         # brglne
         if typeName == "Brglne":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}brglne")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"brglne")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "brglne." + str(s411Object.get_gml_id())
             
         # opnlne
         if typeName == "Opnlne":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}opnlne")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"opnlne")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "opnlne." + str(s411Object.get_gml_id())
             
         # lkilne
         if typeName == "Lkilne":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}lkilne")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"lkilne")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "lkilne." + str(s411Object.get_gml_id())
             
         #i ridg
         if typeName == "I_Ridg":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}i_ridg")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"i_ridg")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "i_ridg." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_icerdv() is not None :#and s411Object.get_icerdv() in icerdvEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icerdv")
+                    element = ET.SubElement(iceElement, ice_catalog+"icerdv")
                     element.text = str(s411Object.get_icerdv())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icermh() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icermh")
+                    element = ET.SubElement(iceElement, ice_catalog+"icermh")
                     element.text = str(s411Object.get_icermh())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icerxh() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icerxh")
+                    element = ET.SubElement(iceElement, ice_catalog+"icerxh")
                     element.text = str(s411Object.get_icerxh())
             except AttributeError:
                 pass
                 
         #i lead
         if typeName == "I_Lead":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}i_lead")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"i_lead")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "i_lead." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_icesod() is not None :#and s411Object.get_icesod() in icesodEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icesod")
+                    element = ET.SubElement(iceElement, ice_catalog+"icesod")
                     element.text = str(s411Object.get_icesod())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_ia_obn() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_obn")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_obn")
                     element.text = str(s411Object.get_ia_obn())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icedvw() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icedvw")
+                    element = ET.SubElement(iceElement, ice_catalog+"icedvw")
                     element.text = str(s411Object.get_icedvw())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_ia_dmw() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_dmw")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_dmw")
                     element.text = str(s411Object.get_ia_dmw())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_ia_dxw() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_dxw")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_dxw")
                     element.text = str(s411Object.get_ia_dxw())
             except AttributeError:
                 pass
                 
         #i fral
         if typeName == "I_Fral":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}i_fral")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"i_fral")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "i_fral." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_icesod() is not None :#and s411Object.get_icesod() in icesodEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icesod")
+                    element = ET.SubElement(iceElement, ice_catalog+"icesod")
                     element.text = str(s411Object.get_icesod())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_ia_obn() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_obn")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_obn")
                     element.text = str(s411Object.get_ia_obn())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icedvw() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icedvw")
+                    element = ET.SubElement(iceElement, ice_catalog+"icedvw")
                     element.text = str(s411Object.get_icedvw())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_ia_dmw() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_dmw")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_dmw")
                     element.text = str(s411Object.get_ia_dmw())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_ia_dxw() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_dxw")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_dxw")
                     element.text = str(s411Object.get_ia_dxw())
             except AttributeError:
                 pass
                 
         #i crac
         if typeName == "I_Crac":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}i_crac")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"i_crac")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "i_crac." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_icesod() is not None :#and s411Object.get_icesod() in icesodEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icesod")
+                    element = ET.SubElement(iceElement, ice_catalog+"icesod")
                     element.text = str(s411Object.get_icesod())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_ia_obn() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_obn")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_obn")
                     element.text = str(s411Object.get_ia_obn())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icedvw() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icedvw")
+                    element = ET.SubElement(iceElement, ice_catalog+"icedvw")
                     element.text = str(s411Object.get_icedvw())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_ia_dmw() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_dmw")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_dmw")
                     element.text = str(s411Object.get_ia_dmw())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_ia_dxw() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_dxw")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_dxw")
                     element.text = str(s411Object.get_ia_dxw())
             except AttributeError:
                 pass
                 
         # Icecom     
         if typeName == "Icecom":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}icecom")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"icecom")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "icecom." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_icecst() is not None :#and s411Object.get_icecst() in icecstEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icecst")
+                    element = ET.SubElement(iceElement, ice_catalog+"icecst")
                     element.text = str(s411Object.get_icecst())
             except AttributeError:
                 pass
         
         # Icelea
         if typeName == "Icelea":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}icelea")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"icelea")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "icelea." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_iceloc() is not None :#and s411Object.get_iceloc() in icelocEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}iceloc")
+                    element = ET.SubElement(iceElement, ice_catalog+"iceloc")
                     element.text = str(s411Object.get_iceloc())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icelst() is not None :#and s411Object.get_icelst() in icelstEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icelst")
+                    element = ET.SubElement(iceElement, ice_catalog+"icelst")
                     element.text = str(s411Object.get_icelst())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icelwd() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icelwd")
+                    element = ET.SubElement(iceElement, ice_catalog+"icelwd")
                     element.text = str(s411Object.get_icelwd())
             except AttributeError:
                 pass
             
         # Icebrg
         if typeName == "Icebrg":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}icebrg")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"icebrg")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "icebrg." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_icebsz() is not None :#and s411Object.get_icebsz() in icebszEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icebsz")
+                    element = ET.SubElement(iceElement, ice_catalog+"icebsz")
                     element.text = str(s411Object.get_icebsz())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icedsp() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icedsp")
+                    element = ET.SubElement(iceElement, ice_catalog+"icedsp")
                     element.text = str(s411Object.get_icedsp())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_iceddr() is not None :#and s411Object.get_iceddr() in iceddrEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}iceddr")
+                    element = ET.SubElement(iceElement, ice_catalog+"iceddr")
                     element.text = str(s411Object.get_iceddr())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_ia_obn() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_obn")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_obn")
                     element.text = str(s411Object.get_ia_obn())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_ia_bfm() is not None :#and s411Object.get_ia_bfm() in ia_bfmEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_bfm")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_bfm")
                     element.text = str(s411Object.get_ia_bfm())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_ia_buh() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_buh")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_buh")
                     element.text = str(s411Object.get_ia_buh())
             except AttributeError:
                 pass
                 
         # Flobrg
         if typeName == "Flobrg":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}flobrg")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"flobrg")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "flobrg." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_icedsp() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icedsp")
+                    element = ET.SubElement(iceElement, ice_catalog+"icedsp")
                     element.text = str(s411Object.get_icedsp())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_iceddr() is not None :#and s411Object.get_iceddr() in iceddrEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}iceddr")
+                    element = ET.SubElement(iceElement, ice_catalog+"iceddr")
                     element.text = str(s411Object.get_iceddr())
             except AttributeError:
                 pass
                 
         # icethk
         if typeName == "Icethk":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}icethk")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"icethk")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "icethk." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_icetck() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icetck")
+                    element = ET.SubElement(iceElement, ice_catalog+"icetck")
                     element.text = str(s411Object.get_icetck())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icemax() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icemax")
+                    element = ET.SubElement(iceElement, ice_catalog+"icemax")
                     element.text = str(s411Object.get_icemax())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icemin() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icemin")
+                    element = ET.SubElement(iceElement, ice_catalog+"icemin")
                     element.text = str(s411Object.get_icemin())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icetty() is not None :#and s411Object.get_icetty() in icettyEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icetty")
+                    element = ET.SubElement(iceElement, ice_catalog+"icetty")
                     element.text = str(s411Object.get_icetty())
             except AttributeError:
                 pass
@@ -936,235 +938,235 @@ def s411ObjectsToGml(s411ObjectList,S411epsg=4326):
         
         # iceshr
         if typeName == "Iceshr":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}iceshr")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"iceshr")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "iceshr." + str(s411Object.get_gml_id())
             
         # icediv
         if typeName == "Icediv":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}icediv")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"icediv")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "icediv." + str(s411Object.get_gml_id())
             
         # icerdg
         if typeName == "Icerdg":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}icerdg")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"icerdg")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "icerdg." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_icercn() is not None :#and s411Object.get_icercn() in icercnEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icercn")
+                    element = ET.SubElement(iceElement, ice_catalog+"icercn")
                     element.text = str(s411Object.get_icercn())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icerfq() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icerfq")
+                    element = ET.SubElement(iceElement, ice_catalog+"icerfq")
                     element.text = str(s411Object.get_icerfq())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icermh() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icermh")
+                    element = ET.SubElement(iceElement, ice_catalog+"icermh")
                     element.text = str(s411Object.get_icermh())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icerxh() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icerxh")
+                    element = ET.SubElement(iceElement, ice_catalog+"icerxh")
                     element.text = str(s411Object.get_icerxh())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icerdv() is not None :#and s411Object.get_icerdv() in icerdvEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icerdv")
+                    element = ET.SubElement(iceElement, ice_catalog+"icerdv")
                     element.text = str(s411Object.get_icerdv())
             except AttributeError:
                 pass
                 
         # icekel
         if typeName == "Icekel":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}icekel")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"icekel")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "icekel." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_icekcn() is not None :#and s411Object.get_icekcn() in icekcnEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icekcn")
+                    element = ET.SubElement(iceElement, ice_catalog+"icekcn")
                     element.text = str(s411Object.get_icekcn())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icekfq() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icekfq")
+                    element = ET.SubElement(iceElement, ice_catalog+"icekfq")
                     element.text = str(s411Object.get_icekfq())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icekmd() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icekmd")
+                    element = ET.SubElement(iceElement, ice_catalog+"icekmd")
                     element.text = str(s411Object.get_icekmd())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_icekxd() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icekxd")
+                    element = ET.SubElement(iceElement, ice_catalog+"icekxd")
                     element.text = str(s411Object.get_icekxd())
             except AttributeError:
                 pass
                 
         # icedft
         if typeName == "Icedft":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}icedft")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"icedft")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "icedft." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_icedsp() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icedsp")
+                    element = ET.SubElement(iceElement, ice_catalog+"icedsp")
                     element.text = str(s411Object.get_icedsp())
             except AttributeError:
                 pass
                 
             try:
                 if s411Object.get_iceddr() is not None :#and s411Object.get_iceddr() in iceddrEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}iceddr")
+                    element = ET.SubElement(iceElement, ice_catalog+"iceddr")
                     element.text = str(s411Object.get_iceddr())
             except AttributeError:
                 pass
                 
         # icefra
         if typeName == "Icefra":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}icefra")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"icefra")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "icefra." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_icefty() is not None :#and s411Object.get_icefty() in iceftyEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icefty")
+                    element = ET.SubElement(iceElement, ice_catalog+"icefty")
                     element.text = str(s411Object.get_icefty())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_iceloc() is not None :#and s411Object.get_iceloc() in icelocEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}iceloc")
+                    element = ET.SubElement(iceElement, ice_catalog+"iceloc")
                     element.text = str(s411Object.get_iceloc())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_ia_obn() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_obn")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_obn")
                     element.text = str(s411Object.get_ia_obn())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icesod() is not None :#and s411Object.get_icesod() in icesodEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icesod")
+                    element = ET.SubElement(iceElement, ice_catalog+"icesod")
                     element.text = str(s411Object.get_icesod())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icedvw() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icedvw")
+                    element = ET.SubElement(iceElement, ice_catalog+"icedvw")
                     element.text = str(s411Object.get_icedvw())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_ia_dmw() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_dmw")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_dmw")
                     element.text = str(s411Object.get_ia_dmw())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_ia_dxw() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_dxw")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_dxw")
                     element.text = str(s411Object.get_ia_dxw())
             except AttributeError:
                 pass
                 
         # icerft
         if typeName == "Icerft":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}icerft")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"icerft")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "icerft." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_icefcn() is not None :#and s411Object.get_icefcn() in icefcnEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icefcn")
+                    element = ET.SubElement(iceElement, ice_catalog+"icefcn")
                     element.text = str(s411Object.get_icefcn())
             except AttributeError:
                 pass
                 
         # jmdbrr
         if typeName == "Jmdbrr":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}jmdbrr")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"jmdbrr")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "jmdbrr." + str(s411Object.get_gml_id())
             
         # stgmlt
         if typeName == "Stgmlt":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}stgmlt")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"stgmlt")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "stgmlt." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_icemlt() is not None :#and s411Object.get_icemlt() in icemltEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icemlt")
+                    element = ET.SubElement(iceElement, ice_catalog+"icemlt")
                     element.text = str(s411Object.get_icemlt())
             except AttributeError:
                 pass
                 
         # snwcvr
         if typeName == "Snwcvr":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}snwcvr")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"snwcvr")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "snwcvr." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_icescn() is not None :#and s411Object.get_icescn() in icescnEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icescn")
+                    element = ET.SubElement(iceElement, ice_catalog+"icescn")
                     element.text = str(s411Object.get_icescn())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icesct() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icesct")
+                    element = ET.SubElement(iceElement, ice_catalog+"icesct")
                     element.text = str(s411Object.get_icesct())
             except AttributeError:
                 pass
             
             try:
                 if s411Object.get_icedos() is not None :#and s411Object.get_icedos() in icedosEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icedos")
+                    element = ET.SubElement(iceElement, ice_catalog+"icedos")
                     element.text = str(s411Object.get_icedos())
             except AttributeError:
                 pass
                 
         # strptc
         if typeName == "Strptc":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}strptc")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"strptc")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "strptc." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_icespc() is not None :#and s411Object.get_icespc() in icespcEnum:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}icespc")
+                    element = ET.SubElement(iceElement, ice_catalog+"icespc")
                     element.text = str(s411Object.get_icespc())
             except AttributeError:
                 pass
                 
         # i_grhm
         if typeName == "I_Grhm":
-            iceElement = ET.SubElement(iceFeatureMemberElement, "{http://www.jcomm.info/ice}i_grhm")
+            iceElement = ET.SubElement(iceFeatureMemberElement, ice_catalog+"i_grhm")
             iceElement.attrib["{http://www.opengis.net/gml/3.2}id"] = "i_grhm." + str(s411Object.get_gml_id())
             
             try:
                 if s411Object.get_ia_buh() is not None:
-                    element = ET.SubElement(iceElement, "{http://www.jcomm.info/ice}ia_buh")
+                    element = ET.SubElement(iceElement, ice_catalog+"ia_buh")
                     element.text = str(s411Object.get_ia_buh())
             except AttributeError:
                 pass
@@ -1204,7 +1206,7 @@ def createS411DataSet(s411ElementList):
     ET.register_namespace("gml" , "http://www.opengis.net/gml/3.2")
     
     # Create dataset element
-    datasetElement = ET.Element("{http://www.jcomm.info/ice}IceDataSet")
+    datasetElement = ET.Element(ice_catalog+"IceDataSet")
     # append elements from elementsList
     for element in s411ElementList:
         datasetElement.append(element)
@@ -1250,30 +1252,56 @@ def s411_readshape(file):
     
     if IArea.crs == None:  # if crs is not set, assume it is WGS84
         IArea=IArea.set_crs('epsg:4326')
+        
     extent = [0,0,0,0]
     # get extend from data and transform into WGS84
     # as this only transforms the four corners, the real extend could be greater
     transformer = Transformer.from_crs(IArea.crs, "epsg:4326")
     extent=IArea.total_bounds  # minx,miny,maxx,maxy
     pp=transformer.transform(extent[[0,0,2,2]],extent[[1,3,1,3]])
-    extent=[pp[0].min(),pp[1].min(),pp[0].max(),pp[1].max()]
     
+    near_pole=True
+    if abs(pp[0]).max()<85: near_pole=False
+    lon360=False     # if chart needs longitudes 0-360
     # For exchange of ice data WGS84 (EPSG: 4326) must be used.
     # NEW possibilities is also 3995 and 3031
-    S411epsg=IArea.crs.to_epsg(min_confidence=10)
-    crs2crs={4326:4326,3031:3031,3995:3995,
-             3412:3031,3976:3031,102021:3031,3032:3031,
-             3411:3995,3413:3995,3411:3995,5936:3995,5937:3995,102018:3995}
-    if S411epsg in crs2crs:
-        # if S411epsg != crs2crs[S411epsg]:
-        # das If auskommentiert, da wir oben mit confidence=10 auch ähnliche, aber nicht
-        # genaue EPSG Referenzen akzeptieren.
-            S411epsg=str(crs2crs[S411epsg])
-            IArea=IArea.to_crs(epsg=S411epsg)
+    # we try to use WGS84 if the maximum absolute latitude is below 85°
+    # if the extent (total_bounds) in longitude spans more then about 180°
+    # we look if the chart just goes over the dateline and then has extent less
+    # the 180° (WGS84 with 0-360° longitude is used in that case)
+    # else we use some kind of polar projection
+    if (pp[1].max()-pp[1].min())>180:
+        wgs360="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +lon_wrap=180"
+        transformer360 = Transformer.from_crs(IArea.crs, wgs360)
+        pp2=transformer360.transform(extent[[0,0,2,2]],extent[[1,3,1,3]])
+        if (pp2[1].max()-pp2[1].min())<180:
+            lon360=True
+            extent=[pp2[0].min(),pp2[1].min(),pp2[0].max(),pp2[1].max()]
+        else:
+            extent=[pp[0].min(),pp[1].min(),pp[0].max(),pp[1].max()]
+
+    if (not near_pole) and lon360:                          # chart around dateline
+            IArea=IArea.to_crs(crs=wgs360)
+            S411epsg=wgs360
+    elif (not near_pole) and ((pp[1].max()-pp[1].min())<180): # chart with restricted longitude range
+            S411epsg="4326"
+            IArea=IArea.to_crs(epsg=4326)
     else:
-        S411epsg='4326'
-        IArea=IArea.to_crs(epsg=4326)
-    if S411epsg == '4326':# as geopandas uses x,y which is lon,lat; but CRS4326 uses lot/lon we have to exchange coordinates
+        S411epsg=IArea.crs.to_epsg(min_confidence=10)
+        crs2crs={4326:4326,3031:3031,3995:3995,
+                 3412:3031,3976:3031,102021:3031,3032:3031,
+                 3411:3995,3413:3995,3411:3995,5936:3995,5937:3995,102018:3995}
+        if S411epsg in crs2crs:
+            # if S411epsg != crs2crs[S411epsg]:
+            # das If auskommentiert, da wir oben mit confidence=10 auch ähnliche, aber nicht
+            # genaue EPSG Referenzen akzeptieren.
+                S411epsg=str(crs2crs[S411epsg])
+                IArea=IArea.to_crs(epsg=S411epsg)
+        else:
+            S411epsg='4326'
+            IArea=IArea.to_crs(epsg=4326)
+            
+    if S411epsg == '4326':# as geopandas uses x,y which is lon,lat; but CRS4326 uses lat/lon we have to exchange coordinates
         import shapely
         IArea.geometry=IArea.geometry.map(lambda polygon: shapely.ops.transform(lambda x, y: (y, x), polygon))
     # we first have to set the Metadata to string, as else geopandas suppseswe want to add a column
