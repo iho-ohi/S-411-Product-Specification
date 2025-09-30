@@ -1,4 +1,2 @@
-[FATAL] "fo:inline" is not a valid child of "fo:block-container"! (See position 342:59)
-Can't obtain table's widths information: javax.xml.transform.TransformerException: org.apache.fop.fo.ValidationException: null:342:59: "fo:inline" is not a valid child of "fo:block-container"! (See position 342:59)
-Page 20: Unresolved ID reference "annex-data-classification-and-encoding-guide" found.
+Page 19: Unresolved ID reference "annex-data-classification-and-encoding-guide" found.
 1 link target could not be fully resolved and now point to the top of the page or is dysfunctional.
