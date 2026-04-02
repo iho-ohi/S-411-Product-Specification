@@ -1,4 +1,4 @@
-= IHO S-128 Catalogue of Nautical Products
+= WMO S-411 Dynamic Ice Information Product Specification
 
 //image:https://github.com/metanorma/S-411-Product-Specification/actions/workflows/generate.yml/badge.svg["Build Status", link="https://github.com/metanorma/S-411-Product-Specification/actions/workflows/generate.yml"]
 
