@@ -1,19 +1,21 @@
-= WMO S-411 	Dynamic Ice Information Product Specification
+= IHO S-128 Catalogue of Nautical Products
 
-image:https://github.com/metanorma/S-411-Product-Specification/actions/workflows/generate.yml/badge.svg["Build Status", link="https://github.com/metanorma/S-102-Product-Specification/actions/workflows/generate.yml"]
+//image:https://github.com/metanorma/S-411-Product-Specification/actions/workflows/generate.yml/badge.svg["Build Status", link="https://github.com/metanorma/S-411-Product-Specification/actions/workflows/generate.yml"]
 
 This document is available in its rendered forms here:
 
-* https://iho-ohi.github.io/S-411-Product-Specification/[IHO S-411 (HTML)]
+* https://iho-ohi.github.io/S-128-Product-Specification/[IHO S-411 (HTML)]
+
+Metanorma: https://github.com/iho-ohi/S-411-Product-Specification-Development/blob/main/Documents/PS/document.html[Product Specification]
 
 == Purpose
 
-This is the IHO repository for developing the next edition of
-the S-102 Bathymetric Surface Product Specification.
+This is the WMO repository for developing the next edition of
+the S-411 Dynamic Ice Information Products.
 
-*WARNING: The contents of this repository are in draft form and are not necessarily in force yet.
+WARNING: The contents of this repository are in draft form and are not necessarily in force yet.
 Please refer to the final version published on the official
-https://iho.int[IHO] website.*
+https://registry.iho.int[GI Registry] website.
 
 
 == General
@@ -22,7 +24,7 @@ This repository contains the source files of S-411 standards, including:
 
 * S-411 1.0.0
 * S-411 x.x.x
-  
+
 These documents are encoded in the
 https://www.metanorma.org/author/topics/document-format/[Metanorma AsciiDoc format].
 
